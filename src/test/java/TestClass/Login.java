@@ -10,6 +10,7 @@ import Utility.LoggerService;
 import Utility.Utils;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import java.io.IOException;
@@ -35,32 +36,42 @@ public class Login extends BasePage {
         courseDetails = new CourseDetails();
         cart = new Cart();
     }
+
+
+
     @Test
     public void test001() throws IOException, InterruptedException {
-        logger.StartTest("test001()");
         String Uname = getData("uname");
         String Pass = getData("pass");
         login.navigateToLoginScreen();
+        Reporter.log("Navigating To Login Screen\"");
         logger.info("Navigating To Login Screen");
         login.logInToApplication(Uname,Pass)
                 .SelectCources("Sentiment Analysis in Trading");
+        Reporter.log("Navigating To Select Cources");
         logger.info("Navigating To Select Cources");
         String CourseTitle  = Utils.getText(courseDetails.CourseTitle);
         logger.info("Cource Title is: "+CourseTitle);
+        Reporter.log("Cource Title is: "+CourseTitle);
         String CourseFee  = Utils.getText(courseDetails.CorseFee);
         logger.info("Cource Fee is: "+CourseFee);
+        Reporter.log("Cource Fee is: "+CourseFee);
         courseDetails.EnrollCourse();
         logger.info("Enrolling Cource");
         boolean Flag = driver.getCurrentUrl().contains("cart");
         Assert.assertTrue(Flag,"User navigated to cart Page.");
+        Reporter.log("User navigated to cart Page.");
         logger.info("User navigated to cart Page.");
         List<WebElement> courses = cart.getCourses();
         Assert.assertEquals(courses.size(), Integer.parseInt(Utils.getText(cart.CartCount)),"Cart Count and Count of cources is equal");
         logger.info("Cart Count is: "+courses.size());
+        Reporter.log("Cart Count is: "+courses.size());
+        Reporter.log("Cource Names Are:");
         logger.info("Cource Names Are:");
         courses.iterator().forEachRemaining(x->System.out.println(x.getText()));
         String BaseAmmount  = Utils.getText(cart.GetAmmount("Base Amount"));
         logger.info("BaseAmmount:"+BaseAmmount);
+        Reporter.log("BaseAmmount:"+BaseAmmount);
         String AmmountPayable  =Utils.getText(cart.AmmountPayable);
         logger.info("AmmountPayable:"+AmmountPayable);
         String currentHandle = driver.getWindowHandle();
@@ -88,10 +99,9 @@ public class Login extends BasePage {
         //Thread.sleep(1000);
         //Utils.clickjs(cart.CloseButton);
         //login.LogOut();
-        logger.endTest("test001()");
     }
 
-    @Test(enabled = false)
+    @Test
     public void test002() throws IOException, InterruptedException {
         logger.StartTest("test001()");
         String Uname = getData("uname");

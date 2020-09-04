@@ -2,11 +2,20 @@ package Base;
 import Config.AppSetting;
 import Config.Common;
 import Config.ConfigurationManager;
+import Utility.OptionsManager;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.PageLoadStrategy;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.testng.annotations.AfterTest;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +26,7 @@ import java.util.Properties;
 
 public class BasePage {
     public static WebDriver driver;
+    public static OptionsManager optionsManager;
 
 //    public static void invokeBrowser() throws IOException {
 //        if(getData("browser").equalsIgnoreCase("chrome")){
@@ -32,13 +42,14 @@ public class BasePage {
 //        driver.get(getData("appURL"));
 //    }
     public static void invokeBrowser() throws IOException {
+        optionsManager= new OptionsManager(LoadData());
         if(getData("browser").equalsIgnoreCase("chrome")){
             WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
+            driver = new ChromeDriver(optionsManager.getChromeOptions());
         }
         else {
             WebDriverManager.firefoxdriver().setup();
-            driver = new FirefoxDriver();
+            driver = new FirefoxDriver(optionsManager.getFirefoxOptions());
         }
         driver.manage().deleteAllCookies();
         driver.manage().window().maximize();
@@ -66,5 +77,18 @@ public class BasePage {
         }
         return prop;
     }
-
+    /**
+     * This method is used to take screenshot
+     */
+    public String getScreenshot() {
+        File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        String path = System.getProperty("user.dir") + "/screenshots/" + System.currentTimeMillis() + ".png";
+        File destination = new File(path);
+        try {
+            FileUtils.copyFile(src, destination);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return path;
+    }
 }
